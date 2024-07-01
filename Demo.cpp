@@ -3,15 +3,15 @@
  */
 #include <iostream>
 #include <string>
-#include "node.hpp"
-#include "tree.hpp"
+#include "Node.hpp"
+#include "Tree.hpp"
 
 using namespace std;
 
 int main()
 {
 
-    Node<double> root_node = Node(1.1);
+    Node<double> *root_node = Node(1.1);
     Tree<double> tree; // Binary tree that contains doubles.
     tree.add_root(root_node);
     Node<double> n1 = Node(1.2);
