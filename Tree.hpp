@@ -14,7 +14,8 @@ namespace ariel
         size_t height;
 
     public:
-        Tree(Node<T, k> *root = nullptr) : root(root), height(0) {}
+        Tree(Node<T, k> *root = nullptr) :root(root),  height(0) {}
+        
         ~Tree()
         {
             // Implementing the destructor to clean up memory
@@ -45,7 +46,11 @@ namespace ariel
                 if (node->getParent() == nullptr)
                 {
                     root = node;
-                    cout << "add seccesfuli" << endl;
+                    cout << "Root add seccesfuli" << endl;
+                }
+                else{
+                    cout<<"This node have parens, try to root him"<<endl;
+                    add_root(node->getParent());
                 }
             }
             else

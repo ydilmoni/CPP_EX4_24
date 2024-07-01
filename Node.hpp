@@ -120,7 +120,7 @@ namespace ariel
             {
                 height = h;
             }
-            Node *getParent()
+            Node<T,n>* getParent()
             {
                 return parent;
             }

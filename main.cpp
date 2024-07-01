@@ -19,10 +19,18 @@ int main()
     Node<int, 3>* node8 = new Node<int, 3>(8);
 
     node3->addChild(node2);
+    node3->addChild(node4);
+    node3->addChild(node5);
+    node2->addChild(node1);
+    node2->addChild(node6);
+    node4->addChild(node7);
+    node4->addChild(node8);
 
-    // Create a Tree<int, 3> object with node3 as the root
-    Tree<int, 3> tree(node3);
-    tree.add_sub_node(tree.get_root(), node1);
+
+    // Create a Tree<int, 3> object and try to put node8 as root. 
+    Tree<int, 3> tree;
+    tree.add_root(node8);
+    
     tree.print_tree();
 
 
