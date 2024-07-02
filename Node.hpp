@@ -103,29 +103,29 @@ namespace ariel
             }
         }
 
-            const T &getValue() const
-            {
-                return value;
-            }
+        const T &getValue() const
+        {
+            return value;
+        }
 
-            size_t getNumOfChildren() const
-            {
-                return child_count;
-            }
-            size_t getHeight()
-            {
-                return height;
-            }
-            void setHeight(size_t h)
-            {
-                height = h;
-            }
-            Node<T,n>* getParent()
-            {
-                return parent;
-            }
-        };
+        size_t getNumOfChildren() const
+        {
+            return child_count;
+        }
+        size_t getHeight()
+        {
+            return height;
+        }
+        void setHeight(size_t h)
+        {
+            height = h;
+        }
+        Node<T, n> *getParent()
+        {
+            return parent;
+        }
+    }; //class node
 
-    } // namespace ariel
+} // namespace ariel
 
 #endif // NODE_HPP

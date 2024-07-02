@@ -1,6 +1,9 @@
 #ifndef TREE_HPP
 #define TREE_HPP
 
+#include <stack>
+#include <queue>
+
 #include "Node.hpp"
 using namespace std;
 
@@ -14,8 +17,8 @@ namespace ariel
         size_t height;
 
     public:
-        Tree(Node<T, k> *root = nullptr) :root(root),  height(0) {}
-        
+        Tree(Node<T, k> *root = nullptr) : root(root), height(0) {}
+
         ~Tree()
         {
             // Implementing the destructor to clean up memory
@@ -48,8 +51,9 @@ namespace ariel
                     root = node;
                     cout << "Root add seccesfuli" << endl;
                 }
-                else{
-                    cout<<"This node have parens, try to root him"<<endl;
+                else
+                {
+                    cout << "This node have parens, try to root him" << endl;
                     add_root(node->getParent());
                 }
             }
@@ -88,7 +92,98 @@ namespace ariel
                 std::cout << "Tree is empty." << std::endl;
             }
         }
-    };
-}
+
+        class BFSIterator
+        {
+        private:
+            queue<Node<T, k> *> bfsQueue;
+
+        public:
+            BFSIterator(Node<T, k> *root)
+            {
+                if (root != nullptr)
+                {
+                    bfsQueue.push(root);
+                }
+            }
+
+            bool hasNext() const
+            {
+                return !bfsQueue.empty();
+            }
+
+            Node<T, k> *next()
+            {
+                if (!hasNext())
+                {
+                    return nullptr;
+                }
+
+                Node<T, k> *current = bfsQueue.front();
+                bfsQueue.pop();
+
+                for (size_t i = 0; i < current->getNumOfChildren(); i++)
+                {
+                    if (current->children[i] != nullptr)
+                    {
+                        bfsQueue.push(current->children[i]);
+                    }
+                }
+                return current;
+            }
+        }; // class BFS iterator
+
+        class DFSIterator
+        {
+        private:
+            stack<Node<T, k> *> dfsStack;
+
+        public:
+            DFSIterator(Node<T, k> *root)
+            {
+                if (root != nullptr)
+                {
+                    dfsStack.push(root);
+                }
+            }
+
+            bool hasNext() const
+            {
+                return !dfsStack.empty();
+            }
+
+            Node<T, k> *next()
+            {
+                if (!hasNext())
+                {
+                    return nullptr;
+                }
+
+                Node<T, k>* current = dfsStack.top();
+                dfsStack.pop();
+
+                for (int i = current->getNumOfChildren() - 1; i >= 0; i--)
+                {
+                    if (current->children[i] != nullptr)
+                    {
+                        dfsStack.push(current->children[i]);
+                    }
+                }
+                return current;
+            }
+        }; // class DFS iterator
+
+        BFSIterator bfs_begin()
+        {
+            return BFSIterator(root);
+        }
+
+        DFSIterator dfs_begin()
+        {
+            return DFSIterator(root);
+        }
+
+    }; // class Tree
+} // namespace ariel
 
 #endif // TREE_HPP

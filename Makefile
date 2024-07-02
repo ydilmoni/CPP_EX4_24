@@ -2,17 +2,15 @@ CXX=g++
 CXXFLAGS=-std=c++14 -Werror 
 VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
 
-SOURCES=main.cpp
+SOURCES=main.cpp Tree.hpp Node.hpp
 OBJECTS=$(subst .cpp,.o,$(SOURCES))
 
 .PHONI: cleen all valgrind run
 
-all:main.cpp
-	g++ -o main.exe main.cpp
-	
+all:$(SOURCES)
+	g++ -o main.exe $(SOURCES)
 run:
 	./main.exe
-	rm -f *.o main.exe
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) --compile $< -o $@
