@@ -47,7 +47,6 @@ namespace ariel
             {
                 children[child_count++] = newChild;
                 newChild->setParent(this);
-                newChild->setHeight(this->getHeight() + 1);
                 cout << "Child successfully added" << endl;
             }
 
@@ -60,6 +59,10 @@ namespace ariel
         void setParent(Node *parent)
         {
             this->parent = parent;
+            if (parent != nullptr) // This prevents problems when you delete a child and make it a parent with nullptr
+            {
+                this->setHeight(parent->getHeight() + 1);
+            }
         }
 
         void removeChild(Node *chiltToDelete)
@@ -77,7 +80,6 @@ namespace ariel
                     children[child_count - 1] = nullptr;
                     --child_count;
                     chiltToDelete->setParent(nullptr);
-                    chiltToDelete->setHeight(0);
                     cout << "Child successfully removed" << endl;
                     break;
                 }
@@ -120,11 +122,25 @@ namespace ariel
         {
             height = h;
         }
+
+        void setHeight()
+        {
+            this->setHeight(this->parent->getHeight() + 1);
+
+                for (int i = 0; i < n; i++)
+            {
+                if (this->children[i] != nullptr)
+                {
+                    this->children[i]->setHeight();
+                }
+            }
+        }
+
         Node<T, n> *getParent()
         {
             return parent;
         }
-    }; //class node
+    }; // class node
 
 } // namespace ariel
 

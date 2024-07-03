@@ -17,7 +17,9 @@ namespace ariel
         size_t height;
 
     public:
-        Tree(Node<T, k> *root = nullptr) : root(root), height(0) {}
+        Tree(Node<T, k> *root = nullptr) : height(0) {
+            this->add_root(root);
+        }
 
         ~Tree()
         {
@@ -43,9 +45,9 @@ namespace ariel
 
         void add_root(Node<T, k> *node)
         {
-            if (root == nullptr)
-
+            if (root == nullptr || root == node)
             {
+                root = nullptr;
                 if (node->getParent() == nullptr)
                 {
                     root = node;
@@ -68,10 +70,11 @@ namespace ariel
             if (parent != nullptr)
             {
                 parent->addChild(child);
+                add_root(root);
             }
             else
             {
-                cout << "Parent is nullptr." << endl;
+                cout << "Parent is nullptr or he is the root." << endl;
             }
         }
 
