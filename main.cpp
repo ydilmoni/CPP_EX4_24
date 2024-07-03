@@ -26,6 +26,8 @@ int main()
     Node<int> *node12 = new Node<int>(12);
     Node<int> *node13 = new Node<int>(13);
     Node<int> *node14 = new Node<int>(14);
+    Node<int> *node15 = new Node<int>(15);
+    Node<int> *node16 = new Node<int>(16);
 
     // Connect nodes
     tree.add_sub_node(root, node0);
@@ -44,28 +46,17 @@ int main()
     tree.add_sub_node(node6, node13);
     tree.add_sub_node(node6, node14);
 
-
     cout<<endl;
-    cout << "height of root is :"<<root->getHeight()<<endl;
-    cout << "height of node0 is :"<<node0->getHeight()<<endl;
-    cout << "height of node1 is :"<<node1->getHeight()<<endl;
-    cout << "height of node2 is :"<<node2->getHeight()<<endl;
-    cout << "height of node3 is :"<<node3->getHeight()<<endl;
-    cout << "height of node4 is :"<<node4->getHeight()<<endl;
-    cout << "height of node5 is :"<<node5->getHeight()<<endl;
-    cout << "height of node6 is :"<<node6->getHeight()<<endl;
-    cout << "height of node7 is :"<<node7->getHeight()<<endl;
-    cout << "height of node8 is :"<<node8->getHeight()<<endl;
-    cout << "height of node9 is :"<<node9->getHeight()<<endl;
-    cout << "height of node10 is :"<<node10->getHeight()<<endl;
-    cout << "height of node11 is :"<<node11->getHeight()<<endl;
-    cout << "height of node12 is :"<<node12->getHeight()<<endl;
-    cout << "height of node13 is :"<<node13->getHeight()<<endl;
-    cout << "height of node14 is :"<<node14->getHeight()<<endl;
+    
+    cout<<tree.getHeight()<<endl;
+    tree.add_sub_node(node14, node15);
+    tree.add_sub_node(node15, node16);
+    cout<<tree.getHeight()<<endl;
+
+
 
 
     // Create a Tree<int, 3> object and try to put node8 as root.
-    tree.print_tree();
     
     // // BFS traversal
     // Tree<int>::BFSIterator bfs = tree.bfs_begin();

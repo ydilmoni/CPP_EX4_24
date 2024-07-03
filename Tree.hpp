@@ -43,6 +43,10 @@ namespace ariel
             }
         }
 
+        size_t getHeight(){
+            return height;
+        }
+
         void add_root(Node<T, k> *node)
         {
             if (root == nullptr || root == node)
@@ -64,12 +68,16 @@ namespace ariel
                 cout << "Root already exists" << endl;
             }
         }
+        
 
         void add_sub_node(Node<T, k> *parent, Node<T, k> *child)
         {
             if (parent != nullptr)
             {
                 parent->addChild(child);
+                if (height<child->getHeight()){
+                    height=child->getHeight();
+                }
                 add_root(root);
             }
             else
