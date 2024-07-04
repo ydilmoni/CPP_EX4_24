@@ -1,7 +1,8 @@
-#ifndef COMPLEX_HPP
-#define COMPLEX_HPP
+#ifndef COMPLEX_H
+#define COMPLEX_H
 
 #include <iostream>
+#include <sstream>
 
 class Complex {
 private:
@@ -10,7 +11,7 @@ private:
 
 public:
     Complex(double real, double imaginary);
-    
+
     // Getters
     double getReal() const;
     double getImaginary() const;
@@ -22,8 +23,11 @@ public:
     Complex operator/(const Complex& other) const;
     bool operator==(const Complex& other) const;
 
+    // Method to convert Complex to string
+    std::string toString() const;
+
     // Friend function for output stream
-    friend std::ostream& operator<<(std::ostream& os, const Complex& complex);
+    friend std::ostringstream operator<<(std::ostream& os, const Complex& complex);
 };
 
-#endif // COMPLEX_HPP
+#endif // COMPLEX_H

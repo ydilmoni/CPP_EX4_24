@@ -1,6 +1,5 @@
 #include "Complex.hpp"
 
-using namespace std;
 Complex::Complex(double real, double imaginary)
     : real(real), imaginary(imaginary) {}
 
@@ -38,7 +37,14 @@ bool Complex::operator==(const Complex& other) const {
     return real == other.real && imaginary == other.imaginary;
 }
 
-std::ostream& operator<<(std::ostream& os, const Complex& complex) {
-    os << complex.real << " + " << complex.imaginary << "i";
-    return os;
+std::string Complex::toString() const {
+    std::ostringstream oss;
+    oss << real << " + " << imaginary << "i";
+    return oss.str();
+}
+
+std::ostringstream operator<<(std::ostream& os, const Complex& complex) {
+    std::ostringstream oss;
+    oss << complex.real << " + " << complex.imaginary << "i";
+    return oss;
 }

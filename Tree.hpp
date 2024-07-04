@@ -3,327 +3,373 @@
 
 #include <stack>
 #include <queue>
+#include <cmath>
+#include <sstream>
 
 #include "Node.hpp"
 using namespace std;
 
 namespace ariel
 {
-    template <typename T, size_t k = 2>
-    class Tree
+template <typename T, size_t k = 2>
+class Tree
+{
+private:
+    Node<T, k> *root;
+    size_t height;
+    int maxDataLength;
+    int totalX;
+    int toalY;
+
+public:
+    int maxChildren = k;
+    Tree(Node<T, k> *root = nullptr) : height(0) {
+        this->add_root(root);
+
+    }
+
+    ~Tree()
+    {
+        if (root != nullptr)
+        {
+            delete_tree(root);
+        }
+    }
+
+    // Function to recursively delete the tree nodes
+    void delete_tree(Node<T, k> *node)
+    {
+        if (node != nullptr)
+        {
+            for (size_t i = 0; i < node->getNumOfChildren(); ++i)
+            {
+                delete_tree(node->children[i]);
+            }
+            delete node;
+        }
+    }
+    void setMaxDataLength(int newMax){
+        maxDataLength = newMax;
+    }
+    size_t getHeight(){
+        return height;
+    }
+
+    void add_root(Node<T, k> *node)
+    {
+        if (root == nullptr || root == node)
+        {
+            root = nullptr;
+            if (node->getParent() == nullptr)
+            {
+                root = node;
+                cout << "Root add seccesfuli" << endl;
+            }
+            else
+            {
+                cout << "This node have parens, try to root him" << endl;
+                add_root(node->getParent());
+            }
+        }
+        else
+        {
+            cout << "Root already exists" << endl;
+        }
+        setMaxDataLength(findMaxDataLength(root));
+
+    }
+
+    void add_sub_node(Node<T, k> *parent, Node<T, k> *child)
+    {
+        if (parent != nullptr)
+        {
+            parent->addChild(child);
+            if (height<child->getHeight()){
+                height=child->getHeight();
+            }
+            add_root(root);
+        }
+        else
+        {
+            cout << "Parent is nullptr or he is the root." << endl;
+        }
+    }
+
+    Node<T, k> *get_root()
+    {
+        return root;
+    }
+
+    void print_tree() const
+    {
+        if (root != nullptr)
+        {
+            std::cout << "Printing Tree:" << std::endl;
+            root->print_node();
+        }
+        else
+        {
+            std::cout << "Tree is empty." << std::endl;
+        }
+    }
+
+    int getTotalX(Node<T,k>* node) {
+        return findMaxDataLength(root) * pow(k,(getHeight() - node->getHeight()));
+    }
+
+    int getTotalY(Node<T,k>* node){
+        return (getHeight() - node->getHeight())*maxChildren;
+    }
+
+    size_t getLength(const T& value) {
+        ostringstream oss;
+        oss << value; // Convert value to a string
+        string str = oss.str(); // Get the string representation
+        return str.length(); // Return the length of the string
+    }
+
+    int findMaxDataLength(){
+        return findMaxDataLength(root);
+    }
+
+    int findMaxDataLength(Node<T,k>* node){
+        if (node == nullptr){
+             return 0;
+        }
+
+
+        size_t maxLength = getLength(node->getValue());
+
+        for (Node<T,k> *child : node->children){
+            size_t childMaxLength = findMaxDataLength(child);
+            if (childMaxLength > maxLength) {
+                maxLength = childMaxLength;
+            }
+        }
+        return maxLength;
+
+    }
+
+    class BFSIterator
     {
     private:
-        Node<T, k> *root;
-        size_t height;
+        queue<Node<T, k> *> bfsQueue;
 
     public:
-        Tree(Node<T, k> *root = nullptr) : height(0) {
-            this->add_root(root);
-        }
-
-        ~Tree()
-        {
-            // Implementing the destructor to clean up memory
-            if (root != nullptr)
-            {
-                delete_tree(root);
-            }
-        }
-
-        // Function to recursively delete the tree nodes
-        void delete_tree(Node<T, k> *node)
-        {
-            if (node != nullptr)
-            {
-                for (size_t i = 0; i < node->getNumOfChildren(); ++i)
-                {
-                    delete_tree(node->children[i]);
-                }
-                delete node;
-            }
-        }
-
-        size_t getHeight(){
-            return height;
-        }
-
-        void add_root(Node<T, k> *node)
-        {
-            if (root == nullptr || root == node)
-            {
-                root = nullptr;
-                if (node->getParent() == nullptr)
-                {
-                    root = node;
-                    cout << "Root add seccesfuli" << endl;
-                }
-                else
-                {
-                    cout << "This node have parens, try to root him" << endl;
-                    add_root(node->getParent());
-                }
-            }
-            else
-            {
-                cout << "Root already exists" << endl;
-            }
-        }
-        
-
-        void add_sub_node(Node<T, k> *parent, Node<T, k> *child)
-        {
-            if (parent != nullptr)
-            {
-                parent->addChild(child);
-                if (height<child->getHeight()){
-                    height=child->getHeight();
-                }
-                add_root(root);
-            }
-            else
-            {
-                cout << "Parent is nullptr or he is the root." << endl;
-            }
-        }
-
-        Node<T, k> *get_root() const
-        {
-            return root;
-        }
-
-        void print_tree() const
+        BFSIterator(Node<T, k> *root)
         {
             if (root != nullptr)
             {
-                std::cout << "Printing Tree:" << std::endl;
-                root->print_node();
-            }
-            else
-            {
-                std::cout << "Tree is empty." << std::endl;
+                bfsQueue.push(root);
             }
         }
 
-        class BFSIterator
+        bool hasNext() const
         {
-        private:
-            queue<Node<T, k> *> bfsQueue;
-
-        public:
-            BFSIterator(Node<T, k> *root)
-            {
-                if (root != nullptr)
-                {
-                    bfsQueue.push(root);
-                }
-            }
-
-            bool hasNext() const
-            {
-                return !bfsQueue.empty();
-            }
-
-            Node<T, k> *next()
-            {
-                if (!hasNext())
-                {
-                    return nullptr;
-                }
-
-                Node<T, k> *current = bfsQueue.front();
-                bfsQueue.pop();
-
-                for (size_t i = 0; i < current->getNumOfChildren(); i++)
-                {
-                    if (current->children[i] != nullptr)
-                    {
-                        bfsQueue.push(current->children[i]);
-                    }
-                }
-                return current;
-            }
-        }; // class BFS iterator
-
-        class DFSIterator
-        {
-        private:
-            stack<Node<T, k> *> dfsStack;
-
-        public:
-            DFSIterator(Node<T, k> *root)
-            {
-                if (root != nullptr)
-                {
-                    dfsStack.push(root);
-                }
-            }
-
-            bool hasNext() const
-            {
-                return !dfsStack.empty();
-            }
-
-            Node<T, k> *next()
-            {
-                if (!hasNext())
-                {
-                    return nullptr;
-                }
-
-                Node<T, k> *current = dfsStack.top();
-                dfsStack.pop();
-
-                for (int i = current->getNumOfChildren() - 1; i >= 0; i--)
-                {
-                    if (current->children[i] != nullptr)
-                    {
-                        dfsStack.push(current->children[i]);
-                    }
-                }
-                return current;
-            }
-        }; // class DFS iterator
-
-        class PostOrderIterator
-        {
-        private:
-            stack<Node<T, 2> *> s1, s2;
-
-        public:
-            PostOrderIterator(Node<T, 2> *root)
-            {
-                if (root != nullptr)
-                {
-                    s1.push(root);
-                    while (!s1.empty())
-                    {
-                        Node<T, 2> *node = s1.top();
-                        s1.pop();
-                        s2.push(node);
-                        if (node->children[0] != nullptr)
-                            s1.push(node->children[0]);
-                        if (node->children[1] != nullptr)
-                            s1.push(node->children[1]);
-                    }
-                }
-            }
-
-            bool hasNext() const
-            {
-                return !s2.empty();
-            }
-
-            Node<T, 2> *next()
-            {
-                if (!hasNext())
-                    return nullptr;
-                Node<T, 2> *node = s2.top();
-                s2.pop();
-                return node;
-            }
-        }; // class PostOrderIterator
-
-        class PreOrderIterator
-        {
-        private:
-            stack<Node<T, 2> *> s;
-
-        public:
-            PreOrderIterator(Node<T, 2> *root)
-            {
-                if (root != nullptr)
-                    s.push(root);
-            }
-
-            bool hasNext() const
-            {
-                return !s.empty();
-            }
-
-            Node<T, 2> *next()
-            {
-                if (!hasNext())
-                    return nullptr;
-                Node<T, 2> *node = s.top();
-                s.pop();
-                if (node->children[1] != nullptr)
-                    s.push(node->children[1]);
-                if (node->children[0] != nullptr)
-                    s.push(node->children[0]);
-                return node;
-            }
-        }; // class PreOrderIterator
-
-        class InOrderIterator
-        {
-        private:
-            stack<Node<T, 2> *> s;
-            Node<T, 2> *current;
-
-        public:
-            InOrderIterator(Node<T, 2> *root) : current(root) {}
-
-            bool hasNext() const
-            {
-                return !s.empty() || current != nullptr;
-            }
-
-            Node<T, 2> *next()
-            {
-                while (current != nullptr)
-                {
-                    s.push(current);
-                    current = current->children[0];
-                }
-
-                if (s.empty())
-                    return nullptr;
-
-                Node<T, 2> *node = s.top();
-                s.pop();
-                current = node->children[1];
-                return node;
-            }
-        }; // class InOrderIterator
-
-        BFSIterator bfs_begin()
-        {
-            return BFSIterator(root);
+            return !bfsQueue.empty();
         }
 
-        DFSIterator dfs_begin()
+        Node<T, k> *next()
         {
-            return DFSIterator(root);
-        }
-
-        PostOrderIterator post_order_begin()
-        {
-            if constexpr (k != 2)
+            if (!hasNext())
             {
-                throw std::runtime_error("Post-order traversal is only supported for binary trees (k=2)");
+                return nullptr;
             }
-            return PostOrderIterator(root);
-        }
 
-        PreOrderIterator pre_order_begin()
-        {
-            if constexpr (k != 2)
+            Node<T, k> *current = bfsQueue.front();
+            bfsQueue.pop();
+
+            for (size_t i = 0; i < current->getNumOfChildren(); i++)
             {
-                throw std::runtime_error("Pre-order traversal is only supported for binary trees (k=2)");
+                if (current->children[i] != nullptr)
+                {
+                    bfsQueue.push(current->children[i]);
+                }
             }
-            return PreOrderIterator(root);
+            return current;
         }
+    }; // class BFS iterator
 
-        InOrderIterator in_order_begin()
+    class DFSIterator
+    {
+    private:
+        stack<Node<T, k> *> dfsStack;
+
+    public:
+        DFSIterator(Node<T, k> *root)
         {
-            if constexpr (k != 2)
+            if (root != nullptr)
             {
-                throw std::runtime_error("In-order traversal is only supported for binary trees (k=2)");
+                dfsStack.push(root);
             }
-            return InOrderIterator(root);
         }
 
-    }; // class Tree
+        bool hasNext() const
+        {
+            return !dfsStack.empty();
+        }
+
+        Node<T, k> *next()
+        {
+            if (!hasNext())
+            {
+                return nullptr;
+            }
+
+            Node<T, k> *current = dfsStack.top();
+            dfsStack.pop();
+
+            for (int i = current->getNumOfChildren() - 1; i >= 0; i--)
+            {
+                if (current->children[i] != nullptr)
+                {
+                    dfsStack.push(current->children[i]);
+                }
+            }
+            return current;
+        }
+    }; // class DFS iterator
+
+    class PostOrderIterator
+    {
+    private:
+        stack<Node<T, 2> *> s1, s2;
+
+    public:
+        PostOrderIterator(Node<T, 2> *root)
+        {
+            if (root != nullptr)
+            {
+                s1.push(root);
+                while (!s1.empty())
+                {
+                    Node<T, 2> *node = s1.top();
+                    s1.pop();
+                    s2.push(node);
+                    if (node->children[0] != nullptr)
+                        s1.push(node->children[0]);
+                    if (node->children[1] != nullptr)
+                        s1.push(node->children[1]);
+                }
+            }
+        }
+
+        bool hasNext() const
+        {
+            return !s2.empty();
+        }
+
+        Node<T, 2> *next()
+        {
+            if (!hasNext())
+                return nullptr;
+            Node<T, 2> *node = s2.top();
+            s2.pop();
+            return node;
+        }
+    }; // class PostOrderIterator
+
+    class PreOrderIterator
+    {
+    private:
+        stack<Node<T, 2> *> s;
+
+    public:
+        PreOrderIterator(Node<T, 2> *root)
+        {
+            if (root != nullptr)
+                s.push(root);
+        }
+
+        bool hasNext() const
+        {
+            return !s.empty();
+        }
+
+        Node<T, 2> *next()
+        {
+            if (!hasNext())
+                return nullptr;
+            Node<T, 2> *node = s.top();
+            s.pop();
+            if (node->children[1] != nullptr)
+                s.push(node->children[1]);
+            if (node->children[0] != nullptr)
+                s.push(node->children[0]);
+            return node;
+        }
+    }; // class PreOrderIterator
+
+    class InOrderIterator
+    {
+    private:
+        stack<Node<T, 2> *> s;
+        Node<T, 2> *current;
+
+    public:
+        InOrderIterator(Node<T, 2> *root) : current(root) {}
+
+        bool hasNext() const
+        {
+            return !s.empty() || current != nullptr;
+        }
+
+        Node<T, 2> *next()
+        {
+            while (current != nullptr)
+            {
+                s.push(current);
+                current = current->children[0];
+            }
+
+            if (s.empty())
+                return nullptr;
+
+            Node<T, 2> *node = s.top();
+            s.pop();
+            current = node->children[1];
+            return node;
+        }
+    }; // class InOrderIterator
+
+    BFSIterator bfs_begin()
+    {
+        return BFSIterator(root);
+    }
+
+    DFSIterator dfs_begin()
+    {
+        return DFSIterator(root);
+    }
+
+    PostOrderIterator post_order_begin()
+    {
+        if constexpr (k != 2)
+        {
+            throw std::runtime_error("Post-order traversal is only supported for binary trees (k=2)");
+        }
+        return PostOrderIterator(root);
+    }
+
+    PreOrderIterator pre_order_begin()
+    {
+        if constexpr (k != 2)
+        {
+            throw std::runtime_error("Pre-order traversal is only supported for binary trees (k=2)");
+        }
+        return PreOrderIterator(root);
+    }
+
+    InOrderIterator in_order_begin()
+    {
+        if constexpr (k != 2)
+        {
+            throw std::runtime_error("In-order traversal is only supported for binary trees (k=2)");
+        }
+        return InOrderIterator(root);
+    }
+
+}; // class Tree
 } // namespace ariel
 
 #endif // TREE_HPP

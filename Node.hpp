@@ -11,136 +11,137 @@ using namespace std;
 
 namespace ariel
 {
-    template <typename T, size_t n = 2>
-    class Node
+template <typename T, size_t n = 2>
+class Node
+{
+private:
+    size_t height;
+    T value;
+    Node *parent;
+
+public:
+    size_t child_count;
+    array<Node<T, n> *, n> children;
+    Node(T value) : value(value), child_count(0), parent(nullptr), height(0)
     {
-    private:
-        size_t height;
-        T value;
-        Node *parent;
+        children.fill(nullptr);
+    }
 
-    public:
-        size_t child_count;
-        array<Node<T, n> *, n> children;
-        Node(T value) : value(value), child_count(0), parent(nullptr), height(0)
+    Node(const Node &other)
+    {
+        value = other.getValue();
+        child_count = other.child_count;
+        parent = other.getParent();
+
+        height = other.getHeight();
+        children.fill(nullptr);
+        for (size_t i = 0; i < child_count; i++)
         {
-            children.fill(nullptr);
+            children[i] = other.children[i];
+        }
+    }
+
+    void addChild(Node<T, n> *newChild)
+    {
+        if (this->getNumOfChildren() < n)
+        {
+            children[child_count++] = newChild;
+            newChild->setParent(this);
+            cout << "Child successfully added" << endl;
         }
 
-        Node(const Node &other)
+        else
         {
-            value = other.getValue();
-            child_count = other.child_count;
-            parent = other.getParent();
-
-            height = other.getHeight();
-            children.fill(nullptr);
-            for (size_t i = 0; i < child_count; i++)
-            {
-                children[i] = other.children[i];
-            }
+            cout << "This node have the maximum amount of child" << endl;
         }
+    }
 
-        void addChild(Node<T, n> *newChild)
+    void setParent(Node *parent)
+    {
+        this->parent = parent;
+        if (parent != nullptr) // This prevents problems when you delete a child and make it a parent with nullptr
         {
-            if (this->getNumOfChildren() < n)
-            {
-                children[child_count++] = newChild;
-                newChild->setParent(this);
-                cout << "Child successfully added" << endl;
-            }
-
-            else
-            {
-                cout << "This node have the maximum amount of child" << endl;
-            }
+            this->setHeight(parent->getHeight() + 1);
         }
+    }
 
-        void setParent(Node *parent)
+    void removeChild(Node *chiltToDelete)
+    {
+        bool found = false;
+        for (size_t i = 0; i < child_count; i++)
         {
-            this->parent = parent;
-            if (parent != nullptr) // This prevents problems when you delete a child and make it a parent with nullptr
+            if (children[i] == chiltToDelete)
             {
-                this->setHeight(parent->getHeight() + 1);
-            }
-        }
-
-        void removeChild(Node *chiltToDelete)
-        {
-            bool found = false;
-            for (size_t i = 0; i < child_count; i++)
-            {
-                if (children[i] == chiltToDelete)
+                found = true;
+                for (size_t j = i; j < child_count - 1; j++)
                 {
-                    found = true;
-                    for (size_t j = i; j < child_count - 1; j++)
-                    {
-                        children[j] = children[j + 1];
-                    }
-                    children[child_count - 1] = nullptr;
-                    --child_count;
-                    chiltToDelete->setParent(nullptr);
-                    cout << "Child successfully removed" << endl;
-                    break;
+                    children[j] = children[j + 1];
                 }
+                children[child_count - 1] = nullptr;
+                --child_count;
+                chiltToDelete->setParent(nullptr);
+                cout << "Child successfully removed" << endl;
+                break;
             }
-            if (!found)
+        }
+        if (!found)
+        {
+            cout << "This node doesn't have this child" << endl;
+        }
+    }
+
+
+    // void print_node(int level = 0) const
+    // {
+    //     // Print the current node's value at the specified indentation level
+    //     std::cout << std::string(level, '-') << "> Node Value: " << value << std::endl;
+
+    //     // Recursively print each child node
+    //     for (size_t i = 0; i < child_count; ++i)
+    //     {
+    //         if (children[i] != nullptr)
+    //         {
+    //             children[i]->print_node(level + 1);
+    //         }
+    //     }
+    // }
+
+    const T &getValue() const
+    {
+        return value;
+    }
+
+    size_t getNumOfChildren() const
+    {
+        return child_count;
+    }
+    size_t getHeight()
+    {
+        return height;
+    }
+    void setHeight(size_t h)
+    {
+        height = h;
+    }
+
+    void setHeight()
+    {
+        this->setHeight(this->parent->getHeight() + 1);
+
+        for (int i = 0; i < n; i++)
+        {
+            if (this->children[i] != nullptr)
             {
-                cout << "This node doesn't have this child" << endl;
+                this->children[i]->setHeight();
             }
         }
+    }
 
-        void print_node(int level = 0) const
-        {
-            // Print the current node's value at the specified indentation level
-            std::cout << std::string(level, '-') << "> Node Value: " << value << std::endl;
-
-            // Recursively print each child node
-            for (size_t i = 0; i < child_count; ++i)
-            {
-                if (children[i] != nullptr)
-                {
-                    children[i]->print_node(level + 1);
-                }
-            }
-        }
-
-        const T &getValue() const
-        {
-            return value;
-        }
-
-        size_t getNumOfChildren() const
-        {
-            return child_count;
-        }
-        size_t getHeight()
-        {
-            return height;
-        }
-        void setHeight(size_t h)
-        {
-            height = h;
-        }
-
-        void setHeight()
-        {
-            this->setHeight(this->parent->getHeight() + 1);
-
-                for (int i = 0; i < n; i++)
-            {
-                if (this->children[i] != nullptr)
-                {
-                    this->children[i]->setHeight();
-                }
-            }
-        }
-
-        Node<T, n> *getParent()
-        {
-            return parent;
-        }
-    }; // class node
+    Node<T, n> *getParent()
+    {
+        return parent;
+    }
+}; // class node
 
 } // namespace ariel
 
